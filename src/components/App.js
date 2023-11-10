@@ -3,10 +3,13 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import ToyForm from "./ToyForm";
 import ToyContainer from "./ToyContainer";
+import ToyFilter from "./ToyFilter";
 
 function App() {
   const [showForm, setShowForm] = useState(false);
   const [toys, setToys] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [popular, setPopular] = useState(false);
 
   useEffect(() => {
     fetch("http://localhost:3001/toys")
@@ -34,6 +37,11 @@ function App() {
     });
     setToys(updatedToys);
   }
+
+  const filteredToys = toys
+    .filter((toy) => toy.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((toy) => (popular ? toy.likes > 5 : true));
+
   return (
     <>
       <Header />
@@ -41,8 +49,14 @@ function App() {
       <div className="buttonContainer">
         <button onClick={handleClick}>Add a Toy</button>
       </div>
+      <ToyFilter
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        popular={popular}
+        setPopular={setPopular}
+      />
       <ToyContainer
-        toys={toys}
+        toys={filteredToys}
         onDeleteToy={handleDeleteToy}
         onLikeToy={handleLikeToy}
       />
